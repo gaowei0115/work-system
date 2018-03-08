@@ -1,20 +1,19 @@
 package com.mmc.work.system.tcp.utils;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import sun.net.www.http.HttpClient;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -34,7 +33,7 @@ public class HttpClientOnlyUtils {
         HttpClientBuilder builder = HttpClientBuilder.create();
 
         // socket config
-        SocketConfig config = SocketConfig.custom().setSoKeepAlive(true).setTcpNoDelay(false).setSoTimeout(10000).setRcvBufSize(1024 * 1024)
+        SocketConfig config = SocketConfig.custom().setSoKeepAlive(true).setTcpNoDelay(true).setSoTimeout(10000).setRcvBufSize(1024 * 1024)
                 .setSndBufSize(1024 * 1024).build();
 
         // request config
@@ -63,25 +62,54 @@ public class HttpClientOnlyUtils {
         Object result = "";
         HttpGet httpGet = null;
         CloseableHttpResponse response = null;
+        InputStream is = null;
         try {
             httpGet = new HttpGet(url);
+            httpGet.setHeader(HttpHeaders.CONNECTION, "close");
             response = httpclient.execute(httpGet);
             System.out.println("请求返回状态 status ：" + response.getStatusLine().getStatusCode());
+            int status = response.getStatusLine().getStatusCode();
+            if (status != 200) {
+                // 如果获取响应状态不是200成功，则释放连接
+                httpGet.abort();
+                return null;
+            }
             HttpEntity entity = response.getEntity();
-            result = EntityUtils.toString(entity, "UTF-8");
-            System.out.println("请求返回结果：\n 【" + result + "】");
+            if (entity != null) {
+                is = entity.getContent();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuffer sb = new StringBuffer();
+                String temp = null;
+                while ((temp = br.readLine()) != null) {
+                    sb.append(temp);
+                }
+                System.out.println("请求返回结果：\n 【" + sb.toString() + "】");
+                return sb.toString();
+            }
         } catch (Exception e) {
             System.out.println("send message exception : " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (httpGet != null) {
-                httpGet.abort();
+                try {
+                    httpGet.releaseConnection();
+                } catch (Exception e) {
+                    httpGet.releaseConnection();
+                    e.printStackTrace();
+                }
             }
             if (response != null) {
                 try {
                     response.close();
                 } catch (Exception e) {
                     System.out.println("send message exception : " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -98,7 +126,8 @@ public class HttpClientOnlyUtils {
         long start = System.currentTimeMillis();
         ExecutorService executorService = new ThreadPoolExecutor(100, 1000, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(1024), Executors.defaultThreadFactory());
 
-        String url = "http://www.baidu.com";
+//        final String url = "http://10.4.3.122:8992/match-web/getIhsData.uz";
+        final String url = "http://www.baidu.com";
         List<Future<Boolean>> futureList = new ArrayList<>();
         try {
             for (int i = 0; i < 1000; i++) {
