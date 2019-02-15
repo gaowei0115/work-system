@@ -1,6 +1,7 @@
 package com.mmc.work.java8.utils;
 
 import com.mmc.work.java8.vo.AppleVo;
+import com.mmc.work.java8.vo.FruitVo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,55 @@ import java.util.List;
  * @history: (version) author date desc
  */
 public class FruitData {
+
+
+    public static List<FruitVo> createFruitData() {
+        List<FruitVo> fruitVoList = new ArrayList<>();
+        FruitVo fruitVo = new FruitVo();
+        fruitVo.setName("apple");
+        fruitVo.setColor("red");
+        fruitVo.setWeight(0.54);
+        fruitVo.setSize(1.2);
+        fruitVoList.add(fruitVo);
+
+        fruitVo = new FruitVo();
+        fruitVo.setName("apple");
+        fruitVo.setColor("blue");
+        fruitVo.setWeight(1.1);
+        fruitVo.setSize(1.9);
+        fruitVoList.add(fruitVo);
+
+        fruitVo = new FruitVo();
+        fruitVo.setName("orange");
+        fruitVo.setColor("yellow");
+        fruitVo.setWeight(0.23);
+        fruitVo.setSize(0.26);
+        fruitVoList.add(fruitVo);
+
+        fruitVo = new FruitVo();
+        fruitVo.setName("orange");
+        fruitVo.setColor("red");
+        fruitVo.setWeight(0.33);
+        fruitVo.setSize(0.46);
+        fruitVoList.add(fruitVo);
+
+        fruitVo = new FruitVo();
+        fruitVo.setName("Pear");
+        fruitVo.setColor("yellow");
+        fruitVo.setWeight(0.53);
+        fruitVo.setSize(0.76);
+        fruitVoList.add(fruitVo);
+
+        fruitVo = new FruitVo();
+        fruitVo.setName("Pear");
+        fruitVo.setColor("red");
+        fruitVo.setWeight(0.21);
+        fruitVo.setSize(0.48);
+        fruitVoList.add(fruitVo);
+
+        return fruitVoList;
+    }
+
 
     /**
      *

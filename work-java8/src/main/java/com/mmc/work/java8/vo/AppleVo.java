@@ -18,6 +18,8 @@ public class AppleVo extends BaseVo{
 
     private double weight;
 
+    public AppleVo() {}
+
     public double getWeight() {
         return weight;
     }
