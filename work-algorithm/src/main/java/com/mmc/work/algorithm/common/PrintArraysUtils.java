@@ -23,4 +23,16 @@ public class PrintArraysUtils {
         System.out.print("}");
         System.out.println();
     }
+
+    public static void printComparableArrays(Comparable[] arrays) {
+        System.out.print("arrays: {");
+        for (int i = 0; i < arrays.length; i++) {
+            System.out.print(arrays[i]);
+            if (i < arrays.length - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.print("}");
+        System.out.println();
+    }
 }

@@ -10,6 +10,7 @@
       <module>work-tcp</module>
       <module>work-java8</module>
       <module>work-algorithm</module>
+      <module>work-thread</module>
   </modules>
   <packaging>pom</packaging>
 
